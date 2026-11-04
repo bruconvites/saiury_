@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Saiury - 1 ano</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; }
+
+  /* Palco 9:16 que se ajusta a qualquer tela */
+  #stage {
+    position: relative;
+    width: min(100vw, calc(100dvh * 9 / 16));
+    aspect-ratio: 9 / 16;
+    background: #000;
+    overflow: hidden;
+    container-type: inline-size;
+  }
+  .screen { position: absolute; inset: 0; display: none; }
+  .screen.active { display: block; }
+  .screen img.bg, .screen video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+  #screen-first { cursor: pointer; }
+
+  /* Áreas clicáveis (posições em % sobre as imagens) */
+  .hot { position: absolute; display: block; background: transparent; border: 0; cursor: pointer; border-radius: 6cqw; }
+
+  #hot-presente { left: 18.4%; top: 66.2%; width: 21.2%; height: 15%; }
+  #hot-local    { left: 40.8%; top: 66.2%; width: 21.4%; height: 15%; }
+  #hot-confirma { left: 63.5%; top: 66.2%; width: 21.4%; height: 15%; }
+
+  /* Botões sutis */
+  .soft-btn {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 3.4cqw;
+    letter-spacing: .04em;
+    color: rgba(255, 244, 214, .92);
+    background: rgba(40, 10, 10, .28);
+    border: 1px solid rgba(255, 224, 150, .45);
+    border-radius: 999px;
+    padding: 1.6cqw 5cqw;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    white-space: nowrap;
+    transition: background .25s, border-color .25s;
+  }
+  .soft-btn:hover, .soft-btn:focus-visible { background: rgba(40, 10, 10, .5); border-color: rgba(255, 224, 150, .8); outline: none; }
+
+  .skip { bottom: 4.5%; }
+
+  /* Botão "Volte ao convite" logo abaixo de "Brinquedos interativos" */
+  #btn-voltar {
+    top: 75.6%;
+    left: 63%;
+    color: #7a1018;
+    background: rgba(255, 246, 220, .55);
+    border-color: rgba(190, 140, 40, .6);
+    font-size: 3.3cqw;
+    padding: 1.3cqw 4.2cqw;
+  }
+  #btn-voltar:hover, #btn-voltar:focus-visible { background: rgba(255, 246, 220, .85); border-color: rgba(190, 140, 40, .95); }
+
+  /* Camada das mini maçãs e brilhos */
+  #fx { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+  #fx .p { position: absolute; left: 0; top: 0; will-change: transform, opacity; }
+  #fx .spark { filter: drop-shadow(0 0 4px #ffd45a) drop-shadow(0 0 8px rgba(255, 200, 60, .8)); }
+  #fx .apple { filter: drop-shadow(0 0 5px rgba(255, 210, 90, .9)); }
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- 1. Capa -->
+  <section id="screen-first" class="screen active" aria-label="Capa">
+    <img class="bg" src="primeira.jpg" alt="Clique na maçã para abrir o livro" draggable="false">
+  </section>
+
+  <!-- 2. Vídeo 1 -->
+  <section id="screen-v1" class="screen" aria-label="Vídeo 1">
+    <video id="video1" src="video1.mp4" playsinline preload="auto"></video>
+    <button class="soft-btn skip" type="button" data-skip>Pular introdução</button>
+  </section>
+
+  <!-- 3. Vídeo 2 -->
+  <section id="screen-v2" class="screen" aria-label="Vídeo 2">
+    <video id="video2" src="video2.mp4" playsinline preload="auto"></video>
+    <button class="soft-btn skip" type="button" data-skip>Pular introdução</button>
+  </section>
+
+  <!-- 4. Convite interativo -->
+  <section id="screen-convite" class="screen" aria-label="Convite">
+    <img class="bg" src="interativo.jpg" alt="Convite de 1 ano da Saiury" draggable="false">
+    <button id="hot-presente" class="hot" type="button" aria-label="Sugestão de presente"></button>
+    <a id="hot-local" class="hot" target="_blank" rel="noopener" aria-label="Ver localização"
+       href="https://wa.me/5511932052344?text=Ol%C3%A1!%0A%0AQuero%20confirmar%20presen%C3%A7a%20no%20anivers%C3%A1rio%20da%20Saiury!%0A%0A%0ASeremos%3A%0A%0A"></a>
+    <a id="hot-confirma" class="hot" target="_blank" rel="noopener" aria-label="Confirme sua presença"
+       href="https://wa.me/5511932052344?text=Ol%C3%A1!%0A%0AQuero%20confirmar%20presen%C3%A7a%20no%20anivers%C3%A1rio%20da%20Saiury!%0A%0A%0ASeremos%3A%0A%0A(___)%20ADULTOS%0A%0A(___)%20CRIAN%C3%87AS%0A"></a>
+  </section>
+
+  <!-- 5. Sugestões de presente -->
+  <section id="screen-presentes" class="screen" aria-label="Sugestões de presente">
+    <img class="bg" src="presentes.jpg" alt="Sugestões de presente" draggable="false">
+    <button id="btn-voltar" class="soft-btn" type="button">Volte ao convite</button>
+  </section>
+
+</div>
+
+<div id="fx" aria-hidden="true"></div>
+
+<script>
+(function () {
+  var screens = {
+    first: document.getElementById('screen-first'),
+    v1: document.getElementById('screen-v1'),
+    v2: document.getElementById('screen-v2'),
+    convite: document.getElementById('screen-convite'),
+    presentes: document.getElementById('screen-presentes')
+  };
+  var video1 = document.getElementById('video1');
+  var video2 = document.getElementById('video2');
+
+  function show(name) {
+    Object.keys(screens).forEach(function (k) {
+      screens[k].classList.toggle('active', k === name);
+    });
+  }
+
+  function stopVideos() {
+    video1.pause();
+    video2.pause();
+  }
+
+  function play(v) {
+    var p = v.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+
+  // Capa -> clique em qualquer parte inicia o vídeo 1
+  screens.first.addEventListener('click', function () {
+    show('v1');
+    video1.currentTime = 0;
+    play(video1);
+  });
+
+  // Fim do vídeo 1 -> começa o vídeo 2, sem transição
+  video1.addEventListener('ended', function () {
+    show('v2');
+    video2.currentTime = 0;
+    play(video2);
+  });
+
+  // Fim do vídeo 2 -> convite
+  video2.addEventListener('ended', function () {
+    show('convite');
+  });
+
+  // Pular introdução (em qualquer momento dos dois vídeos)
+  document.querySelectorAll('[data-skip]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      stopVideos();
+      show('convite');
+    });
+  });
+
+  // Convite -> sugestões de presente
+  document.getElementById('hot-presente').addEventListener('click', function () {
+    show('presentes');
+  });
+
+  // Presentes -> volta ao convite
+  document.getElementById('btn-voltar').addEventListener('click', function () {
+    show('convite');
+  });
+
+  /* ---------- Mini maçãs com brilhos dourados ---------- */
+  var fx = document.getElementById('fx');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var APPLE_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%">' +
+    '<path d="M16 9c-3-2.5-9-1.5-10.5 4.5C4 19.500 8 28 12 28c1.800 0 2.800-.9 4-.9s2.200.9 4 .9c4 0 8-8.500 6.500-14.500C25 7.500 19 6.500 16 9z" fill="#c8102e"/>' +
+    '<path d="M9.500 13c.8-2.200 2.500-3 4-3" stroke="#ff8a8a" stroke-width="1.800" fill="none" stroke-linecap="round"/>' +
+    '<path d="M16 9c0-2 .8-4 2.200-5" stroke="#6b3b12" stroke-width="1.800" fill="none" stroke-linecap="round"/>' +
+    '<path d="M18.500 5.500c2-2 5-1.800 6-1-1 2.200-4 3-6 1z" fill="#4c9a3a"/>' +
+    '</svg>';
+
+  var SPARK_SVG =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100%" height="100%">' +
+    '<path d="M12 0c.8 6.500 3.500 10.200 12 12-8.500 1.800-11.200 5.500-12 12-.8-6.500-3.500-10.200-12-12C8.500 10.200 11.200 6.500 12 0z" fill="#ffd86b"/>' +
+    '<path d="M12 6c.4 3.500 2 5.200 6 6-4 .8-5.600 2.500-6 6-.4-3.500-2-5.200-6-6 4-.8 5.600-2.500 6-6z" fill="#fff6cf"/>' +
+    '</svg>';
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function spawn(x, y, kind) {
+    var el = document.createElement('div');
+    el.className = 'p ' + kind;
+    var size = kind === 'apple' ? rand(16, 28) : rand(8, 18);
+    el.style.width = size + 'px';
+    el.style.height = size + 'px';
+    el.innerHTML = kind === 'apple' ? APPLE_SVG : SPARK_SVG;
+    fx.appendChild(el);
+
+    var angle = rand(0, Math.PI * 2);
+    var dist = kind === 'apple' ? rand(40, 100) : rand(25, 85);
+    var dx = Math.cos(angle) * dist;
+    var dy = Math.sin(angle) * dist - rand(10, 40);
+    var fall = rand(30, 70);
+    var rot = rand(-120, 120);
+    var dur = kind === 'apple' ? rand(900, 1400) : rand(600, 1100);
+    var ox = x - size / 2, oy = y - size / 2;
+
+    var anim = el.animate([
+      { transform: 'translate(' + ox + 'px,' + oy + 'px) scale(.2) rotate(0deg)', opacity: 0 },
+      { transform: 'translate(' + (ox + dx * .6) + 'px,' + (oy + dy * .6) + 'px) scale(1.1) rotate(' + (rot * .5) + 'deg)', opacity: 1, offset: .25 },
+      { transform: 'translate(' + (ox + dx) + 'px,' + (oy + dy + fall) + 'px) scale(.6) rotate(' + rot + 'deg)', opacity: 0 }
+    ], { duration: dur, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'forwards' });
+
+    anim.onfinish = function () { el.remove(); };
+  }
+
+  function burst(x, y) {
+    if (reduce) { spawn(x, y, 'spark'); return; }
+    var i;
+    for (i = 0; i < 6; i++) spawn(x, y, 'apple');
+    for (i = 0; i < 10; i++) spawn(x, y, 'spark');
+  }
+
+  // Em qualquer parte da tela
+  document.addEventListener('pointerdown', function (e) {
+    burst(e.clientX, e.clientY);
+  }, true);
+})();
+</script>
+</body>
+</html>
